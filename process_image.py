@@ -7,4 +7,4 @@ def get_brightness(data):
     greyscale_image = image.convert('L')
     stat = ImageStat.Stat(greyscale_image)
 
-    return str(stat.mean[0])
+    return stat.mean[0]
