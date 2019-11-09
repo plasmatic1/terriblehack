@@ -1,3 +1,4 @@
+import json
 from base64 import b64decode, b64encode
 from urllib.parse import urlencode
 
@@ -34,21 +35,35 @@ def get_test_names():
 
 @app.route('/test/b64/<path>')
 def get_test_img_b64(path):
-    return b64encode(get_test_image(path), altchars=ALT_CHARS)
+    try:
+        return b64encode(get_test_image(path), altchars=ALT_CHARS)
+    except Exception as e:
+        return f'Error: {e}'
 
 
 @app.route('/test/img/<path>')
 def process_test_img(path):
-    return f'<p>Test Return: {str(get_brightness(get_test_image(path)))}</p>' \
-        f'<p>Test Name: {TEST_NAMES[path]}</p>'
+    try:
+        return f'<p>Test Return: {str(get_brightness(get_test_image(path)))}</p>' \
+            f'<p>Test Name: {TEST_NAMES[path]}</p>'
+    except Exception as e:
+        return f'Error: {e}'
 
 
 @app.route('/img/<blob>')
 def process_binary_img(blob):
-    data = b64decode(blob, altchars=ALT_CHARS)
-    return str(get_brightness(data))
+    try:
+        data = b64decode(blob, altchars=ALT_CHARS)
+        return json.dumps({
+            'data': get_brightness(data)
+        })
+    except Exception as e:
+        return json.dumps({
+            'data': -1,
+            'error': str(e)
+        })
 
 
 if __name__ == '__main__':
-    # app.run()
-    app.run(debug=True)
+    app.run()
+    # app.run(debug=True)
